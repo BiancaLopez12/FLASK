@@ -14,7 +14,7 @@ def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        verificar = request.form['verificar']
+        verificar = request.form['verif_password']
         
         db = get_db()
         error = None
@@ -25,13 +25,13 @@ def register():
             error = 'Password is required.'
 
         elif verificar != password:
-            error = 'No coinciden las contraseñlas.'
+            error = 'No coinciden las contraseñas.'
 
         if error is None:
             try:
                 db.execute(
                     "INSERT INTO user (username, password, verficar) VALUES (?, ?, ?)",
-                    (username, generate_password_hash(password) verificar),
+                    (username, generate_password_hash(password), verificar),
                 )
                 db.commit()
             except db.IntegrityError:
@@ -55,9 +55,9 @@ def login():
         ).fetchone()
 
         if user is None:
-            error = 'Incorrect username.'
+            error = 'Usuario Incorrecto.'
         elif not check_password_hash(user['password'], password):
-            error = 'Incorrect password.'
+            error = 'Contraseña Incorrecta.'
 
         if error is None:
             session.clear()
